@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 
 from iching_coin import calc, build_prompt
 from iching_texts import ZHOUI, get_hex, get_hex_by_symbol_name, format_hex_text
+from iching_en import get_judgment_en
 
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
@@ -147,6 +148,7 @@ def clean_reading(text):
 class IChingRequest(BaseModel):
     tosses: list = Field(...)
     question: str = Field("", max_length=200)
+    lang: str = Field("zh", max_length=5)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -167,30 +169,52 @@ async def health():
 
 @app.post("/api/iching")
 async def get_iching(data: IChingRequest):
-    """掷卦 + LLM 解卦"""
+    """掷卦 + LLM 解卦（支持 zh/en 双语）"""
     hex_data = calc(data.tosses)
     question = data.question or ""
+    is_en = data.lang == "en"
 
-    # RAG 增强（可选）
+    # RAG 增强（可选，中文知识库对英文问题意义不大）
     rag_ctx = ""
-    if question and RAG_INDEX:
+    if question and RAG_INDEX and not is_en:
         snippets = rag_search(question)
         if snippets:
             rag_ctx = "\n\n以下为知识库中与问题相关的参考资料：\n" + "\n".join(
                 f"- {s}" for s in snippets)
 
-    sys_prompt = "你是易经老人，精通六十四卦，解卦准确而生动，回答用自然段落。" + rag_ctx
-
-    # 注入本卦+变卦的公版卦爻辞原文，保证解卦有依据
+    # 注入本卦+变卦的卦爻辞原文（中/英）
     hex_doc = get_hex(hex_data["num"])
-    hex_text = format_hex_text(hex_doc, yang=hex_data.get("lines")) if hex_doc else ""
+    if is_en and hex_doc:
+        j_en, img_en = get_judgment_en(hex_data["num"])
+        hex_text = f"Hexagram {hex_data['num']}: {hex_doc['name']} (symbol {hex_doc['symbol']})\nJudgment: {j_en}\nImage: {img_en}"
+    else:
+        hex_text = format_hex_text(hex_doc, yang=hex_data.get("lines")) if hex_doc else ""
+
     changed_text = ""
     if hex_data.get("changed"):
         changed_doc = get_hex_by_symbol_name(hex_data["changed"])
         if changed_doc:
-            changed_text = f"\n\n【变卦参考】{format_hex_text(changed_doc, yang=hex_data.get('changed_lines'))}"
+            if is_en:
+                j_en2, img_en2 = get_judgment_en(changed_doc["n"])
+                changed_text = f"\n\n[Becoming Hexagram {changed_doc['n']}: {changed_doc['name']}] Judgment: {j_en2}"
+            else:
+                changed_text = f"\n\n【变卦参考】{format_hex_text(changed_doc, yang=hex_data.get('changed_lines'))}"
 
-    prompt = f"""求问者掷六爻得【{hex_data['name']}】卦，请依真实卦象解答。
+    if is_en:
+        sys_prompt = "You are the I Ching Sage, fluent in the Book of Changes, giving accurate and vivid interpretations. Answer in natural paragraphs in English."
+        moving = f"moving lines: {','.join(str(i) for i in hex_data['changing'])}" if hex_data["changing"] else "no moving lines (static hexagram)"
+        sym = hex_doc["symbol"] if hex_doc else ""
+        prompt = f"""The inquirer cast the hexagram {hex_data['name']} (symbol {sym}).
+{moving}{f', becomes {hex_data["changed"]}' if hex_data.get('changed') else ''}
+Question: {question or 'No question asked — please give a general reading of this hexagram.'}
+
+[Hexagram text]
+{hex_text}{changed_text}
+
+Interpret this hexagram for the inquirer's question, within 400 words, in natural paragraphs. No markdown symbols."""
+    else:
+        sys_prompt = "你是易经老人，精通六十四卦，解卦准确而生动，回答用自然段落。" + rag_ctx
+        prompt = f"""求问者掷六爻得【{hex_data['name']}】卦，请依真实卦象解答。
 {hex_data['meaning']}
 变爻：第{','.join(str(i) for i in hex_data['changing'])}爻{'，变卦：' + hex_data['changed'] if hex_data.get('changed') else ''}
 问题：{question or '（未提问，请泛论此卦含义）'}
@@ -199,6 +223,7 @@ async def get_iching(data: IChingRequest):
 {hex_text}{changed_text}
 
 请结合经文原文解答求问者的问题，400字以内，用自然段落输出，禁止任何 Markdown 符号。"""
+
     reading = await call_llm(sys_prompt, prompt, max_tokens=800)
 
     return {

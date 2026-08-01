@@ -18,6 +18,14 @@ body {
 
 .page { max-width: 640px; margin: 0 auto; padding: 2rem 1.2rem 3rem; }
 
+.lang-bar { text-align: right; margin-bottom: 0.6rem; }
+.lang-btn {
+  background: transparent; border: 1px solid #d8cba8; color: #8a7a63;
+  padding: 0.25rem 0.8rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;
+  margin-left: 0.4rem;
+}
+.lang-btn.active { background: var(--gold); border-color: var(--gold); color: #fff; }
+
 .title { text-align: center; font-size: 2rem; color: var(--gold); margin-bottom: 0.3rem; }
 .subtitle { text-align: center; font-size: 0.9rem; color: #8a7a63; margin-bottom: 1.6rem; }
 
