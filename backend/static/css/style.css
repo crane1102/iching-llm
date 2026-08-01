@@ -1,0 +1,73 @@
+:root {
+  --bg: #faf7f2;
+  --card: #f0ebe0;
+  --ink: #3d3226;
+  --gold: #b08d3e;
+  --green: #5a7a5a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+.page { max-width: 640px; margin: 0 auto; padding: 2rem 1.2rem 3rem; }
+
+.title { text-align: center; font-size: 2rem; color: var(--gold); margin-bottom: 0.3rem; }
+.subtitle { text-align: center; font-size: 0.9rem; color: #8a7a63; margin-bottom: 1.6rem; }
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.form-group { margin-bottom: 1.2rem; }
+.form-group label { display: block; font-size: 0.9rem; margin-bottom: 0.4rem; color: #6b5b45; }
+.form-group input {
+  width: 100%; padding: 0.7rem 0.9rem;
+  border: 1px solid #d8cba8; border-radius: 8px;
+  background: #fffdf8; font-size: 1rem;
+}
+
+#coin-area { text-align: center; margin-bottom: 1rem; }
+
+.btn-primary {
+  background: var(--gold); color: #fff; border: none;
+  padding: 0.7rem 2.2rem; border-radius: 8px;
+  font-size: 1.05rem; cursor: pointer;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.coin-result { margin-top: 0.6rem; font-size: 0.9rem; color: #6b5b45; }
+
+.lines { display: flex; flex-direction: column-reverse; align-items: center; gap: 6px; margin: 1rem 0; min-height: 80px; }
+.line { width: 150px; height: 16px; background: var(--ink); border-radius: 3px; position: relative; }
+.line.young { opacity: 1; }
+.line.old { opacity: 0.55; }
+.line .mark { position: absolute; right: -22px; top: -2px; font-size: 0.85rem; color: var(--gold); }
+
+.btn-secondary {
+  display: block; width: 100%; margin-top: 0.8rem;
+  background: var(--green); color: #fff; border: none;
+  padding: 0.8rem; border-radius: 8px; font-size: 1.05rem; cursor: pointer;
+}
+.btn-reset {
+  display: block; width: 100%; margin-top: 0.5rem;
+  background: transparent; color: #8a7a63; border: 1px solid #d8cba8;
+  padding: 0.6rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer;
+}
+
+.result { background: var(--card); border-radius: 12px; padding: 1.5rem; }
+.hexagram { text-align: center; font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; }
+.reading { white-space: pre-wrap; font-size: 0.95rem; }
+.loading { text-align: center; color: #8a7a63; font-size: 0.9rem; padding: 1rem; }
+
+.footer { text-align: center; margin-top: 1.6rem; font-size: 0.75rem; color: #a89a85; }

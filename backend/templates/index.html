@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>易经 LLM 卜卦</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="page">
+  <h1 class="title">🔮 易经卜卦</h1>
+  <p class="subtitle">静心默念你的问题，掷六次硬币，让易经老人为你解卦</p>
+
+  <div class="card">
+    <div class="form-group">
+      <label for="question">你想问什么？</label>
+      <input type="text" id="question" maxlength="100" placeholder="例如：今年事业运势如何？">
+    </div>
+
+    <div id="coin-area">
+      <button id="btn-throw" class="btn-primary">掷硬币</button>
+      <div id="coin-result" class="coin-result">已掷：0 / 6 爻</div>
+    </div>
+
+    <div id="lines" class="lines"></div>
+
+    <button id="btn-cast" class="btn-secondary" style="display:none">起卦解卦</button>
+    <button id="btn-reset" class="btn-reset" style="display:none">重新起卦</button>
+  </div>
+
+  <div id="result" class="result" style="display:none">
+    <div id="hexagram" class="hexagram"></div>
+    <div id="reading" class="reading"></div>
+    <div id="loading" class="loading" style="display:none">卦象已成，易经老人正在推演…（可能需要片刻）</div>
+  </div>
+
+  <footer class="footer">纯本地部署 · LLM 由环境变量配置 · 卦象算法零依赖</footer>
+</div>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
