@@ -65,6 +65,7 @@ When the question matches content in the knowledge base, relevant excerpts are i
 {
   "tosses": [{"coins": [1,1,0]}, {"coins": [0,1,1]}, {"coins": [1,1,1]}, {"coins": [0,0,0]}, {"coins": [1,0,1]}, {"coins": [0,1,0]}],
   "question": "How will my career go this year?",
+  "context": "I am considering a role change and have six months to decide.",
   "lang": "en"
 }
 ```

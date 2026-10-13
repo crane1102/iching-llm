@@ -62,6 +62,7 @@ export ICHING_RAG_DIR=/path/to/your/knowledge
 {
   "tosses": [{"coins": [1,1,0]}, {"coins": [0,1,1]}, {"coins": [1,1,1]}, {"coins": [0,0,0]}, {"coins": [1,0,1]}, {"coins": [0,1,0]}],
   "question": "今年事业运势如何？",
+  "context": "我正在考虑换工作，希望结合目前处境解读。",
   "lang": "zh"
 }
 ```

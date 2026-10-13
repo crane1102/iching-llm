@@ -148,6 +148,7 @@ def clean_reading(text):
 class IChingRequest(BaseModel):
     tosses: list = Field(...)
     question: str = Field("", max_length=200)
+    context: str = Field("", max_length=2000)
     lang: str = Field("zh", max_length=5)
 
 
@@ -172,6 +173,7 @@ async def get_iching(data: IChingRequest):
     """掷卦 + LLM 解卦（支持 zh/en 双语）"""
     hex_data = calc(data.tosses)
     question = data.question or ""
+    context = data.context or ""
     is_en = data.lang == "en"
 
     # RAG 增强（可选，中文知识库对英文问题意义不大）
@@ -207,6 +209,7 @@ async def get_iching(data: IChingRequest):
         prompt = f"""The inquirer cast the hexagram {hex_data['name']} (symbol {sym}).
 {moving}{f', becomes {hex_data["changed"]}' if hex_data.get('changed') else ''}
 Question: {question or 'No question asked — please give a general reading of this hexagram.'}
+Context: {context or 'No additional context provided.'}
 
 [Hexagram text]
 {hex_text}{changed_text}
@@ -218,6 +221,7 @@ Interpret this hexagram for the inquirer's question, within 400 words, in natura
 {hex_data['meaning']}
 变爻：第{','.join(str(i) for i in hex_data['changing'])}爻{'，变卦：' + hex_data['changed'] if hex_data.get('changed') else ''}
 问题：{question or '（未提问，请泛论此卦含义）'}
+背景：{context or '（未提供额外背景）'}
 
 【本卦经文】
 {hex_text}{changed_text}
